@@ -67,6 +67,14 @@ voice_lang = "ja"
 cc = OpenCC("t2s")  # 繁体到简体转换器
 
 
+def _mask_secret(value: str) -> str:
+    if not value:
+        return ""
+    if len(value) <= 8:
+        return "***"
+    return f"{value[:4]}...{value[-4:]}"
+
+
 def main():
     config = ConfigManager()
     from i18n import init_i18n, tr as tr_i18n, tr_in_bundle
@@ -147,7 +155,7 @@ def main():
 
     # Init LLMManager before UI, so that handlers can access it via get_app_runtime().llm_manager
     llm_provider, llm_model, base_url, api_key = config.get_llm_api_config()
-    print(llm_provider, llm_model, base_url, api_key)
+    print(llm_provider, llm_model, base_url, _mask_secret(api_key))
     if not llm_provider:
         print(tr_i18n("main.err_select_llm"))
         return
